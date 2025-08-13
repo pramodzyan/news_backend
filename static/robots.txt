@@ -1,0 +1,17 @@
+User-agent: *
+Allow: /
+
+# Sitemap
+Sitemap: http://127.0.0.1:8000/sitemap.xml
+
+# Disallow admin and private areas
+Disallow: /admin/
+Disallow: /ckeditor/
+
+# Allow important pages
+Allow: /
+Allow: /category/
+Allow: /tag/
+Allow: /author/
+Allow: /search/
+Allow: /contact/

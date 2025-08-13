@@ -1,0 +1,277 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Contact Us - News Portal{% endblock %}
+{% block meta_description %}Get in touch with News Portal. Send us your feedback, news tips, or any questions you may have.{% endblock %}
+
+{% block content %}
+<div class="container">
+    <!-- Contact Header -->
+    <div class="row mb-5">
+        <div class="col-12">
+            <!-- Breadcrumb -->
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item"><a href="{% url 'news:home' %}">Home</a></li>
+                    <li class="breadcrumb-item active" aria-current="page">Contact</li>
+                </ol>
+            </nav>
+            
+            <!-- Contact Title -->
+            <div class="text-center mb-5">
+                <div class="contact-icon mx-auto mb-4 bg-primary text-white d-flex align-items-center justify-content-center" 
+                     style="width: 80px; height: 80px; border-radius: 50%;">
+                    <i class="fas fa-envelope fa-2x"></i>
+                </div>
+                <h1 class="display-4 fw-bold mb-3">Contact Us</h1>
+                <p class="lead text-muted">We'd love to hear from you. Send us a message and we'll respond as soon as possible.</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <!-- Contact Form -->
+        <div class="col-lg-8 mb-5">
+            <div class="card contact-form-card">
+                <div class="card-body p-5">
+                    <h3 class="card-title mb-4">
+                        <i class="fas fa-paper-plane me-2 text-primary"></i>Send us a Message
+                    </h3>
+                    
+                    {% if messages %}
+                    {% for message in messages %}
+                    <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+                        {{ message }}
+                        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                    </div>
+                    {% endfor %}
+                    {% endif %}
+                    
+                    <form method="post" id="contact-form">
+                        {% csrf_token %}
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="id_name" class="form-label">Full Name *</label>
+                                <input type="text" class="form-control form-control-lg" id="id_name" name="name" required>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="id_email" class="form-label">Email Address *</label>
+                                <input type="email" class="form-control form-control-lg" id="id_email" name="email" required>
+                            </div>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="id_subject" class="form-label">Subject *</label>
+                            <input type="text" class="form-control form-control-lg" id="id_subject" name="subject" required>
+                        </div>
+                        
+                        <div class="mb-4">
+                            <label for="id_message" class="form-label">Message *</label>
+                            <textarea class="form-control" id="id_message" name="message" rows="6" 
+                                      placeholder="Tell us what's on your mind..." required></textarea>
+                        </div>
+                        
+                        <button type="submit" class="btn btn-primary btn-lg">
+                            <i class="fas fa-paper-plane me-2"></i>Send Message
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <!-- Contact Information -->
+        <div class="col-lg-4">
+            <!-- Contact Info Card -->
+            <div class="card contact-info-card mb-4">
+                <div class="card-body p-4">
+                    <h5 class="card-title mb-4">
+                        <i class="fas fa-info-circle me-2 text-primary"></i>Get in Touch
+                    </h5>
+                    
+                    <div class="contact-item mb-4">
+                        <div class="d-flex align-items-start">
+                            <div class="contact-icon-sm bg-primary text-white rounded-circle d-flex align-items-center justify-content-center me-3" 
+                                 style="width: 40px; height: 40px; min-width: 40px;">
+                                <i class="fas fa-map-marker-alt"></i>
+                            </div>
+                            <div>
+                                <h6 class="fw-bold mb-1">Address</h6>
+                                <p class="text-muted mb-0">
+                                    123 News Street<br>
+                                    Media City, MC 12345<br>
+                                    India
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="contact-item mb-4">
+                        <div class="d-flex align-items-start">
+                            <div class="contact-icon-sm bg-success text-white rounded-circle d-flex align-items-center justify-content-center me-3" 
+                                 style="width: 40px; height: 40px; min-width: 40px;">
+                                <i class="fas fa-phone"></i>
+                            </div>
+                            <div>
+                                <h6 class="fw-bold mb-1">Phone</h6>
+                                <p class="text-muted mb-0">
+                                    <a href="tel:+911234567890" class="text-decoration-none">+91 123 456 7890</a>
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="contact-item mb-4">
+                        <div class="d-flex align-items-start">
+                            <div class="contact-icon-sm bg-info text-white rounded-circle d-flex align-items-center justify-content-center me-3" 
+                                 style="width: 40px; height: 40px; min-width: 40px;">
+                                <i class="fas fa-envelope"></i>
+                            </div>
+                            <div>
+                                <h6 class="fw-bold mb-1">Email</h6>
+                                <p class="text-muted mb-0">
+                                    <a href="mailto:contact@newsportal.com" class="text-decoration-none">contact@newsportal.com</a>
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="contact-item">
+                        <div class="d-flex align-items-start">
+                            <div class="contact-icon-sm bg-warning text-white rounded-circle d-flex align-items-center justify-content-center me-3" 
+                                 style="width: 40px; height: 40px; min-width: 40px;">
+                                <i class="fas fa-clock"></i>
+                            </div>
+                            <div>
+                                <h6 class="fw-bold mb-1">Business Hours</h6>
+                                <p class="text-muted mb-0">
+                                    Monday - Friday: 9:00 AM - 6:00 PM<br>
+                                    Saturday: 10:00 AM - 4:00 PM<br>
+                                    Sunday: Closed
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Social Media Card -->
+            <div class="card social-media-card">
+                <div class="card-body p-4">
+                    <h5 class="card-title mb-4">
+                        <i class="fas fa-share-alt me-2 text-primary"></i>Follow Us
+                    </h5>
+                    
+                    <div class="d-flex flex-wrap gap-2">
+                        <a href="#" class="btn btn-outline-primary btn-sm">
+                            <i class="fab fa-facebook-f me-1"></i>Facebook
+                        </a>
+                        <a href="#" class="btn btn-outline-info btn-sm">
+                            <i class="fab fa-twitter me-1"></i>Twitter
+                        </a>
+                        <a href="#" class="btn btn-outline-danger btn-sm">
+                            <i class="fab fa-instagram me-1"></i>Instagram
+                        </a>
+                        <a href="#" class="btn btn-outline-dark btn-sm">
+                            <i class="fab fa-linkedin me-1"></i>LinkedIn
+                        </a>
+                        <a href="#" class="btn btn-outline-danger btn-sm">
+                            <i class="fab fa-youtube me-1"></i>YouTube
+                        </a>
+                    </div>
+                    
+                    <hr class="my-4">
+                    
+                    <h6 class="fw-bold mb-3">News Tips</h6>
+                    <p class="text-muted small mb-3">
+                        Have a news tip or story idea? We'd love to hear from you!
+                    </p>
+                    <a href="mailto:tips@newsportal.com" class="btn btn-outline-success btn-sm">
+                        <i class="fas fa-lightbulb me-1"></i>Send News Tip
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- FAQ Section -->
+    <div class="row mt-5">
+        <div class="col-12">
+            <h3 class="section-title mb-4">
+                <i class="fas fa-question-circle me-2"></i>Frequently Asked Questions
+            </h3>
+            
+            <div class="accordion" id="faqAccordion">
+                <div class="accordion-item">
+                    <h2 class="accordion-header" id="faq1">
+                        <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapse1">
+                            How can I submit a news tip?
+                        </button>
+                    </h2>
+                    <div id="collapse1" class="accordion-collapse collapse show" data-bs-parent="#faqAccordion">
+                        <div class="accordion-body">
+                            You can submit news tips by emailing us at <strong>tips@newsportal.com</strong> or using the contact form above. Please provide as much detail as possible about the story.
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="accordion-item">
+                    <h2 class="accordion-header" id="faq2">
+                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapse2">
+                            How do I report an error in an article?
+                        </button>
+                    </h2>
+                    <div id="collapse2" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
+                        <div class="accordion-body">
+                            If you notice an error in any of our articles, please contact us immediately using the form above or email <strong>corrections@newsportal.com</strong> with the article link and details of the error.
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="accordion-item">
+                    <h2 class="accordion-header" id="faq3">
+                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapse3">
+                            Can I republish your articles?
+                        </button>
+                    </h2>
+                    <div id="collapse3" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
+                        <div class="accordion-body">
+                            Please contact us for permission to republish our content. We may allow republication with proper attribution and under certain conditions.
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+.contact-form-card, .contact-info-card, .social-media-card {
+    border: none;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.contact-form-card {
+    background: linear-gradient(135deg, #f8f9fa 0%, #ffffff 100%);
+}
+
+.section-title {
+    font-weight: 700;
+    color: var(--dark-color);
+    border-bottom: 3px solid var(--primary-color);
+    padding-bottom: 10px;
+}
+
+.contact-item {
+    transition: transform 0.3s ease;
+}
+
+.contact-item:hover {
+    transform: translateX(5px);
+}
+
+#contact-form .form-control:focus {
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 0.2rem rgba(13, 110, 253, 0.25);
+}
+</style>
+{% endblock %}

@@ -1,0 +1,329 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load humanize %}
+
+{% block title %}{{ article.title }} - News Portal{% endblock %}
+{% block meta_description %}{{ article.meta_description|default:article.excerpt }}{% endblock %}
+{% block meta_keywords %}{{ article.meta_keywords|default:"news, breaking news, latest news" }}{% endblock %}
+
+{% block og_title %}{{ article.title }}{% endblock %}
+{% block og_description %}{{ article.excerpt }}{% endblock %}
+
+{% block extra_css %}
+<style>
+    .article-header {
+        background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+        padding: 2rem 0;
+        margin-bottom: 2rem;
+    }
+    .article-meta {
+        font-size: 0.9rem;
+        color: #6c757d;
+    }
+    .article-content {
+        font-size: 1.1rem;
+        line-height: 1.8;
+        color: #333;
+    }
+    .article-content img {
+        max-width: 100%;
+        height: auto;
+        margin: 1.5rem 0;
+        border-radius: 8px;
+        box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    }
+    .share-buttons .btn {
+        margin-right: 0.5rem;
+        margin-bottom: 0.5rem;
+    }
+    .related-article {
+        transition: transform 0.3s ease;
+    }
+    .related-article:hover {
+        transform: translateY(-3px);
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container">
+    <!-- Article Header -->
+    <div class="article-header">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-8 mx-auto">
+                    <!-- Breadcrumb -->
+                    <nav aria-label="breadcrumb">
+                        <ol class="breadcrumb">
+                            <li class="breadcrumb-item"><a href="{% url 'news:home' %}">Home</a></li>
+                            <li class="breadcrumb-item">
+                                <a href="{{ article.category.get_absolute_url }}">{{ article.category.name }}</a>
+                            </li>
+                            <li class="breadcrumb-item active" aria-current="page">{{ article.title|truncatewords:5 }}</li>
+                        </ol>
+                    </nav>
+                    
+                    <!-- Category Badge -->
+                    <div class="mb-3">
+                        <span class="badge fs-6" style="background-color: {{ article.category.color }}">
+                            {{ article.category.name }}
+                        </span>
+                        {% if article.is_breaking %}
+                        <span class="badge bg-danger fs-6 ms-2">BREAKING</span>
+                        {% endif %}
+                        {% if article.is_featured %}
+                        <span class="badge bg-warning text-dark fs-6 ms-2">FEATURED</span>
+                        {% endif %}
+                    </div>
+                    
+                    <!-- Article Title -->
+                    <h1 class="display-5 fw-bold mb-3">{{ article.title }}</h1>
+                    
+                    <!-- Subtitle -->
+                    {% if article.subtitle %}
+                    <h2 class="h4 text-muted mb-4">{{ article.subtitle }}</h2>
+                    {% endif %}
+                    
+                    <!-- Article Meta -->
+                    <div class="article-meta d-flex flex-wrap align-items-center">
+                        <div class="me-4 mb-2">
+                            <i class="fas fa-user me-1"></i>
+                            <a href="{% url 'news:author_detail' article.author.pk %}" class="text-decoration-none">
+                                {{ article.author.get_full_name }}
+                            </a>
+                        </div>
+                        <div class="me-4 mb-2">
+                            <i class="fas fa-calendar me-1"></i>
+                            {{ article.published_at|naturaltime }}
+                        </div>
+                        <div class="me-4 mb-2">
+                            <i class="fas fa-clock me-1"></i>
+                            {{ article.get_reading_time }} min read
+                        </div>
+                        <div class="me-4 mb-2">
+                            <i class="fas fa-eye me-1"></i>
+                            {{ article.views_count|intcomma }} views
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <!-- Main Article Content -->
+        <div class="col-lg-8">
+            <!-- Featured Image -->
+            {% if article.featured_image %}
+            <div class="mb-4">
+                <img src="{{ article.featured_image.url }}" 
+                     alt="{{ article.featured_image_alt|default:article.title }}" 
+                     class="img-fluid rounded shadow">
+                {% if article.featured_image_alt %}
+                <small class="text-muted d-block mt-2">{{ article.featured_image_alt }}</small>
+                {% endif %}
+            </div>
+            {% endif %}
+            
+            <!-- Article Content -->
+            <div class="article-content mb-5">
+                {{ article.content|safe }}
+            </div>
+            
+            <!-- Tags -->
+            {% if article.tags.all %}
+            <div class="mb-4">
+                <h6 class="fw-bold mb-3">Tags:</h6>
+                {% for tag in article.tags.all %}
+                <a href="{% url 'news:tag_detail' tag.slug %}" 
+                   class="badge bg-light text-dark text-decoration-none me-2 mb-2 p-2">
+                    <i class="fas fa-tag me-1"></i>{{ tag.name }}
+                </a>
+                {% endfor %}
+            </div>
+            {% endif %}
+            
+            <!-- Share Buttons -->
+            <div class="share-buttons mb-5">
+                <h6 class="fw-bold mb-3">Share this article:</h6>
+                <button class="btn btn-primary btn-sm" onclick="shareOnFacebook()">
+                    <i class="fab fa-facebook-f me-1"></i>Facebook
+                </button>
+                <button class="btn btn-info btn-sm" onclick="shareOnTwitter()">
+                    <i class="fab fa-twitter me-1"></i>Twitter
+                </button>
+                <button class="btn btn-success btn-sm" onclick="shareOnWhatsApp()">
+                    <i class="fab fa-whatsapp me-1"></i>WhatsApp
+                </button>
+                <button class="btn btn-secondary btn-sm" onclick="copyLink()">
+                    <i class="fas fa-link me-1"></i>Copy Link
+                </button>
+                <button class="btn btn-outline-secondary btn-sm" onclick="printArticle()">
+                    <i class="fas fa-print me-1"></i>Print
+                </button>
+            </div>
+            
+            <!-- Comments Section -->
+            <div class="comments-section">
+                <h4 class="mb-4">
+                    <i class="fas fa-comments me-2"></i>
+                    Comments ({{ comments.count }})
+                </h4>
+                
+                <!-- Comment Form -->
+                <div class="card mb-4">
+                    <div class="card-body">
+                        <h6 class="card-title">Leave a Comment</h6>
+                        <form method="post" action="#" id="comment-form">
+                            {% csrf_token %}
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <input type="text" class="form-control" name="name" placeholder="Your Name" required>
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <input type="email" class="form-control" name="email" placeholder="Your Email" required>
+                                </div>
+                            </div>
+                            <div class="mb-3">
+                                <input type="url" class="form-control" name="website" placeholder="Website (optional)">
+                            </div>
+                            <div class="mb-3">
+                                <textarea class="form-control" name="content" rows="4" placeholder="Your comment..." required></textarea>
+                            </div>
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fas fa-paper-plane me-1"></i>Post Comment
+                            </button>
+                        </form>
+                    </div>
+                </div>
+                
+                <!-- Comments List -->
+                {% for comment in comments %}
+                <div class="comment mb-4 p-3 border-start border-primary border-3">
+                    <div class="d-flex justify-content-between align-items-start mb-2">
+                        <div>
+                            <strong>{{ comment.name }}</strong>
+                            {% if comment.website %}
+                            <a href="{{ comment.website }}" target="_blank" class="text-muted ms-2">
+                                <i class="fas fa-external-link-alt"></i>
+                            </a>
+                            {% endif %}
+                        </div>
+                        <small class="text-muted">{{ comment.created_at|naturaltime }}</small>
+                    </div>
+                    <p class="mb-0">{{ comment.content|linebreaks }}</p>
+                    
+                    <!-- Replies -->
+                    {% for reply in comment.replies.all %}
+                    <div class="comment-reply ms-4 mt-3 p-2 bg-light rounded">
+                        <div class="d-flex justify-content-between align-items-start mb-1">
+                            <strong>{{ reply.name }}</strong>
+                            <small class="text-muted">{{ reply.created_at|naturaltime }}</small>
+                        </div>
+                        <p class="mb-0 small">{{ reply.content|linebreaks }}</p>
+                    </div>
+                    {% endfor %}
+                </div>
+                {% empty %}
+                <div class="text-center py-5">
+                    <i class="fas fa-comments fa-3x text-muted mb-3"></i>
+                    <p class="text-muted">No comments yet. Be the first to comment!</p>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+
+        <!-- Sidebar -->
+        <div class="col-lg-4">
+            <!-- Author Info -->
+            <div class="card mb-4">
+                <div class="card-body text-center">
+                    {% if article.author.profile_image %}
+                    <img src="{{ article.author.profile_image.url }}" 
+                         alt="{{ article.author.get_full_name }}" 
+                         class="rounded-circle mb-3" width="80" height="80">
+                    {% else %}
+                    <div class="bg-primary rounded-circle d-inline-flex align-items-center justify-content-center mb-3" 
+                         style="width: 80px; height: 80px;">
+                        <i class="fas fa-user fa-2x text-white"></i>
+                    </div>
+                    {% endif %}
+                    <h6 class="card-title">{{ article.author.get_full_name }}</h6>
+                    {% if article.author.bio %}
+                    <p class="card-text small text-muted">{{ article.author.bio|truncatewords:20 }}</p>
+                    {% endif %}
+                    <a href="{% url 'news:author_detail' article.author.pk %}" class="btn btn-outline-primary btn-sm">
+                        View Profile
+                    </a>
+                </div>
+            </div>
+            
+            <!-- Related Articles -->
+            {% if related_articles %}
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h6 class="mb-0"><i class="fas fa-newspaper me-2"></i>Related Articles</h6>
+                </div>
+                <div class="card-body p-0">
+                    {% for related in related_articles %}
+                    <div class="related-article p-3 border-bottom">
+                        <div class="row g-2">
+                            {% if related.featured_image %}
+                            <div class="col-4">
+                                <img src="{{ related.featured_image.url }}" 
+                                     alt="{{ related.title }}" 
+                                     class="img-fluid rounded">
+                            </div>
+                            <div class="col-8">
+                            {% else %}
+                            <div class="col-12">
+                            {% endif %}
+                                <h6 class="mb-1">
+                                    <a href="{{ related.get_absolute_url }}" class="text-decoration-none">
+                                        {{ related.title|truncatewords:8 }}
+                                    </a>
+                                </h6>
+                                <small class="text-muted">
+                                    {{ related.published_at|naturaltime }}
+                                </small>
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+<script>
+// Share functions
+function shareOnFacebook() {
+    const url = encodeURIComponent(window.location.href);
+    window.open(`https://www.facebook.com/sharer/sharer.php?u=${url}`, '_blank', 'width=600,height=400');
+}
+
+function shareOnTwitter() {
+    const url = encodeURIComponent(window.location.href);
+    const text = encodeURIComponent('{{ article.title|escapejs }}');
+    window.open(`https://twitter.com/intent/tweet?url=${url}&text=${text}`, '_blank', 'width=600,height=400');
+}
+
+function shareOnWhatsApp() {
+    const url = encodeURIComponent(window.location.href);
+    const text = encodeURIComponent('{{ article.title|escapejs }} - ');
+    window.open(`https://wa.me/?text=${text}${url}`, '_blank');
+}
+
+function copyLink() {
+    navigator.clipboard.writeText(window.location.href).then(() => {
+        alert('Link copied to clipboard!');
+    });
+}
+
+function printArticle() {
+    window.print();
+}
+</script>
+{% endblock %}
